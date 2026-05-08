@@ -113,7 +113,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // EF Core
 builder.Services.AddDbContext<EatopiaDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
 // JWT Authentication
