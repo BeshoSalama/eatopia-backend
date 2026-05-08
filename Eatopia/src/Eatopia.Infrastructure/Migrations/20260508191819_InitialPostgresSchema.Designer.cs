@@ -3,6 +3,7 @@ using System;
 using Eatopia.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eatopia.Infrastructure.Migrations
 {
     [DbContext(typeof(EatopiaDbContext))]
-    partial class EatopiaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260508191819_InitialPostgresSchema")]
+    partial class InitialPostgresSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
