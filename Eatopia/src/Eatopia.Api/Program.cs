@@ -358,22 +358,22 @@ if (!isTesting)
         // the repair step below creates/adds the missing tables and columns safely.
         try
         {
-            db.Database.Migrate();
+            //db.Database.Migrate();
         }
         catch (Exception ex)
         {
             Log.Warning(ex, "EF migration failed. Continuing with DatabaseSchemaRepair because the local database may be partially migrated.");
         }
 
-        try
-        {
-            DatabaseSchemaRepair.Apply(db);
-            CommunityAuthSchemaRepair.Apply(db);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Database schema repair failed. Check SQL Server connectivity and permissions.");
-        }
+        //try
+	//{
+	//    DatabaseSchemaRepair.Apply(db);
+	//    CommunityAuthSchemaRepair.Apply(db);
+	//}
+	//catch (Exception ex)
+	//{
+	//    Log.Error(ex, "Database schema repair failed. Check SQL Server connectivity and permissions.");
+	//}
 
         if (app.Environment.IsDevelopment())
         {
