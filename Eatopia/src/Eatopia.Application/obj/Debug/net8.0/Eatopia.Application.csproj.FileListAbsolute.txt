@@ -1,0 +1,16 @@
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\bin\Debug\net8.0\Eatopia.Application.deps.json
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\bin\Debug\net8.0\Eatopia.Application.dll
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\bin\Debug\net8.0\Eatopia.Application.pdb
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\bin\Debug\net8.0\Eatopia.Domain.dll
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\bin\Debug\net8.0\Eatopia.Domain.pdb
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.csproj.AssemblyReference.cache
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.AssemblyInfoInputs.cache
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.AssemblyInfo.cs
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.csproj.CoreCompileInputs.cache
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.sourcelink.json
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia..20C188FD.Up2Date
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.dll
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\refint\Eatopia.Application.dll
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\Eatopia.Application.pdb
+C:\Users\DELL\Documents\Codex\2026-05-07\files-mentioned-by-the-user-final\final-version-domain-ready\Eatopia\src\Eatopia.Application\obj\Debug\net8.0\ref\Eatopia.Application.dll

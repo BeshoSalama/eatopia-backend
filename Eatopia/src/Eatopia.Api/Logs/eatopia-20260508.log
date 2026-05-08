@@ -1,0 +1,1039 @@
+2026-05-08 22:46:31.415 +03:00 [INF] Executed DbCommand (142ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:46:31.550 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-08 22:46:32.191 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:46:32.814 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:46:32.905 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-08 22:46:32.920 +03:00 [INF] Applying migration '20260508191819_InitialPostgresSchema'.
+2026-05-08 22:46:33.103 +03:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ChatThreads" (
+    "Id" uuid NOT NULL,
+    "RequestStatus" character varying(30) NOT NULL DEFAULT 'Pending',
+    "RequestedByUserId" uuid,
+    "AcceptedAt" timestamp with time zone,
+    "DeletedAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ChatThreads" PRIMARY KEY ("Id")
+);
+2026-05-08 22:46:33.196 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "FoodItems" (
+    "Id" uuid NOT NULL,
+    "Name" character varying(200) NOT NULL,
+    "CaloriesPer100g" numeric(18,2) NOT NULL,
+    "ProteinPer100g" numeric(18,2) NOT NULL,
+    "FatPer100g" numeric(18,2) NOT NULL,
+    "CarbsPer100g" numeric(18,2) NOT NULL,
+    "ServingSize" text,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_FoodItems" PRIMARY KEY ("Id")
+);
+2026-05-08 22:46:33.296 +03:00 [INF] Executed DbCommand (97ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Users" (
+    "Id" uuid NOT NULL,
+    "Email" character varying(256) NOT NULL,
+    "PasswordHash" text NOT NULL,
+    "Name" character varying(200) NOT NULL,
+    "Username" character varying(100),
+    "BirthDate" timestamp with time zone,
+    "Location" character varying(100),
+    "Phone" character varying(30),
+    "ProfileImageUrl" text,
+    "Age" integer,
+    "WeightKg" numeric(18,2),
+    "HeightCm" numeric(18,2),
+    "Gender" character varying(20),
+    "ActivityLevel" character varying(50),
+    "Goal" character varying(200),
+    "Role" character varying(20) NOT NULL DEFAULT 'User',
+    "IsBanned" boolean NOT NULL DEFAULT FALSE,
+    "BannedAt" timestamp with time zone,
+    "BannedReason" character varying(1000),
+    "AuthProvider" character varying(50) NOT NULL DEFAULT 'Local',
+    "ExternalProviderId" character varying(300),
+    "EmailConfirmed" boolean NOT NULL DEFAULT FALSE,
+    "EmailConfirmedAt" timestamp with time zone,
+    "EmailConfirmationTokenHash" text,
+    "EmailConfirmationTokenExpiresAt" timestamp with time zone,
+    "LastEmailConfirmationSentAt" timestamp with time zone,
+    "LastSeenAt" timestamp with time zone,
+    "FailedLoginAttemptCount" integer NOT NULL DEFAULT 0,
+    "LoginLockoutEndAt" timestamp with time zone,
+    "JwtTokenVersion" integer NOT NULL DEFAULT 0,
+    "NotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "MessageNotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "CommunityNotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "EmailNotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "ProfileVisibility" character varying(20) NOT NULL DEFAULT 'Public',
+    "PostsVisibility" character varying(20) NOT NULL DEFAULT 'Public',
+    "ShowOnlineStatus" boolean NOT NULL DEFAULT TRUE,
+    "ShowLastSeen" boolean NOT NULL DEFAULT TRUE,
+    "AllowMessageRequests" boolean NOT NULL DEFAULT TRUE,
+    "AllowSearchByEmail" boolean NOT NULL DEFAULT TRUE,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
+);
+2026-05-08 22:46:33.390 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ChatMessages" (
+    "Id" uuid NOT NULL,
+    "ThreadId" uuid NOT NULL,
+    "SenderId" uuid NOT NULL,
+    "MessageText" text NOT NULL DEFAULT '',
+    "MessageType" character varying(30) NOT NULL DEFAULT 'text',
+    "MediaContent" text,
+    "FileName" character varying(255),
+    "SentAt" timestamp with time zone NOT NULL,
+    "IsDeleted" boolean NOT NULL,
+    "EditedAt" timestamp with time zone,
+    "DeletedAt" timestamp with time zone,
+    "DeliveredAt" timestamp with time zone,
+    "SeenAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ChatMessages" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_ChatMessages_ChatThreads_ThreadId" FOREIGN KEY ("ThreadId") REFERENCES "ChatThreads" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_ChatMessages_Users_SenderId" FOREIGN KEY ("SenderId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:33.482 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ChatParticipants" (
+    "Id" uuid NOT NULL,
+    "ThreadId" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "JoinedAt" timestamp with time zone NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ChatParticipants" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_ChatParticipants_ChatThreads_ThreadId" FOREIGN KEY ("ThreadId") REFERENCES "ChatThreads" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_ChatParticipants_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:33.574 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "CommunityPosts" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "Content" text NOT NULL,
+    "ImageUrl" text,
+    "SharedPostId" uuid,
+    "IsDeleted" boolean NOT NULL DEFAULT FALSE,
+    "DeletedAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_CommunityPosts" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_CommunityPosts_CommunityPosts_SharedPostId" FOREIGN KEY ("SharedPostId") REFERENCES "CommunityPosts" ("Id"),
+    CONSTRAINT "FK_CommunityPosts_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:33.668 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ContentReports" (
+    "Id" uuid NOT NULL,
+    "ReporterId" uuid NOT NULL,
+    "ContentType" character varying(30) NOT NULL,
+    "ContentId" uuid NOT NULL,
+    "ReportedUserId" uuid,
+    "Reason" character varying(1000) NOT NULL,
+    "Status" character varying(30) NOT NULL DEFAULT 'Pending',
+    "ReviewedAt" timestamp with time zone,
+    "ReviewedByUserId" uuid,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ContentReports" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_ContentReports_Users_ReportedUserId" FOREIGN KEY ("ReportedUserId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_ContentReports_Users_ReporterId" FOREIGN KEY ("ReporterId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:33.759 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "DietPlans" (
+    "Id" uuid NOT NULL,
+    "Title" character varying(200) NOT NULL,
+    "CaloriesTargetPerDay" numeric(18,2),
+    "DurationDays" integer NOT NULL,
+    "CreatedBy" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_DietPlans" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_DietPlans_Users_CreatedBy" FOREIGN KEY ("CreatedBy") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:33.853 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "MealLogs" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "FoodId" uuid NOT NULL,
+    "MealImageUrl" text,
+    "DetectedAt" timestamp with time zone,
+    "QuantityGrams" numeric(18,2),
+    "CalculatedCalories" numeric(18,2),
+    "CalculatedProtein" numeric(18,2),
+    "CalculatedFat" numeric(18,2),
+    "CalculatedCarbs" numeric(18,2),
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_MealLogs" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_MealLogs_FoodItems_FoodId" FOREIGN KEY ("FoodId") REFERENCES "FoodItems" ("Id") ON DELETE RESTRICT,
+    CONSTRAINT "FK_MealLogs_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:33.945 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Medications" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "Name" character varying(200) NOT NULL,
+    "DosageText" character varying(200),
+    "BeforeAfterMeal" character varying(20),
+    "TimesPerDay" integer NOT NULL,
+    "StartDate" timestamp with time zone,
+    "EndDate" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Medications" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Medications_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.040 +03:00 [INF] Executed DbCommand (93ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Notifications" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "ActorUserId" uuid,
+    "Title" character varying(200) NOT NULL,
+    "Message" text NOT NULL,
+    "Type" character varying(50) NOT NULL DEFAULT 'info',
+    "IsRead" boolean NOT NULL DEFAULT FALSE,
+    "ReadAt" timestamp with time zone,
+    "ScheduledFor" timestamp with time zone,
+    "RelatedEntityType" character varying(100),
+    "RelatedEntityId" uuid,
+    "ActionUrl" character varying(500),
+    "EmailSent" boolean NOT NULL DEFAULT FALSE,
+    "EmailSentAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Notifications" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Notifications_Users_ActorUserId" FOREIGN KEY ("ActorUserId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_Notifications_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.133 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "PasswordResetCodes" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "CodeHash" text NOT NULL,
+    "ExpiresAt" timestamp with time zone NOT NULL,
+    "UsedAt" timestamp with time zone,
+    "IsUsed" boolean NOT NULL DEFAULT FALSE,
+    "AttemptCount" integer NOT NULL DEFAULT 0,
+    "LastAttemptAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_PasswordResetCodes" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_PasswordResetCodes_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.225 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Recipes" (
+    "Id" uuid NOT NULL,
+    "Title" character varying(200) NOT NULL,
+    "Description" character varying(1000),
+    "ImageUrl" character varying(2000),
+    "CaloriesPerServing" numeric(18,2),
+    "Servings" integer NOT NULL,
+    "IngredientsJson" text NOT NULL,
+    "StepsJson" text NOT NULL,
+    "AuthorId" uuid,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Recipes" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Recipes_Users_AuthorId" FOREIGN KEY ("AuthorId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.316 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "RefreshTokens" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "TokenHash" text NOT NULL,
+    "ExpiresAt" timestamp with time zone NOT NULL,
+    "RevokedAt" timestamp with time zone,
+    "ReplacedByTokenHash" text,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_RefreshTokens" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_RefreshTokens_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.409 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserAllergies" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "AllergyName" character varying(200) NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserAllergies" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserAllergies_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.501 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserBlocks" (
+    "Id" uuid NOT NULL,
+    "BlockerId" uuid NOT NULL,
+    "BlockedId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserBlocks" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserBlocks_Users_BlockedId" FOREIGN KEY ("BlockedId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_UserBlocks_Users_BlockerId" FOREIGN KEY ("BlockerId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.595 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserDislikedFoods" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "FoodName" character varying(200) NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserDislikedFoods" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserDislikedFoods_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.686 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserFollows" (
+    "Id" uuid NOT NULL,
+    "FollowerId" uuid NOT NULL,
+    "FollowingId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserFollows" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserFollows_Users_FollowerId" FOREIGN KEY ("FollowerId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_UserFollows_Users_FollowingId" FOREIGN KEY ("FollowingId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.776 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WaterGoals" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "DailyTargetMl" integer NOT NULL,
+    "RemindEveryMinutes" integer NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_WaterGoals" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_WaterGoals_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.869 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WaterLogs" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "AmountMl" integer NOT NULL,
+    "LoggedAt" timestamp with time zone NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_WaterLogs" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_WaterLogs_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:34.961 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WaterReminders" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "ReminderDate" timestamp with time zone NOT NULL,
+    "TimeOfDay" interval NOT NULL,
+    "AmountMl" integer NOT NULL,
+    "IsCompleted" boolean NOT NULL DEFAULT FALSE,
+    "CompletedAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_WaterReminders" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_WaterReminders_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:35.053 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Comments" (
+    "Id" uuid NOT NULL,
+    "PostId" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "Text" text NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Comments" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Comments_CommunityPosts_PostId" FOREIGN KEY ("PostId") REFERENCES "CommunityPosts" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Comments_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:35.143 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "HiddenPosts" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "PostId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_HiddenPosts" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_HiddenPosts_CommunityPosts_PostId" FOREIGN KEY ("PostId") REFERENCES "CommunityPosts" ("Id"),
+    CONSTRAINT "FK_HiddenPosts_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:35.236 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "PostLikes" (
+    "Id" uuid NOT NULL,
+    "PostId" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_PostLikes" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_PostLikes_CommunityPosts_PostId" FOREIGN KEY ("PostId") REFERENCES "CommunityPosts" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_PostLikes_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:35.327 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserPlans" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "PlanId" uuid NOT NULL,
+    "StartDate" timestamp with time zone,
+    "EndDate" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserPlans" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserPlans_DietPlans_PlanId" FOREIGN KEY ("PlanId") REFERENCES "DietPlans" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_UserPlans_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:35.422 +03:00 [INF] Executed DbCommand (93ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "MedicationSchedules" (
+    "Id" uuid NOT NULL,
+    "MedicationId" uuid NOT NULL,
+    "ScheduledDate" timestamp with time zone NOT NULL,
+    "TimeOfDay" interval NOT NULL,
+    "IsTaken" boolean NOT NULL DEFAULT FALSE,
+    "TakenAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_MedicationSchedules" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_MedicationSchedules_Medications_MedicationId" FOREIGN KEY ("MedicationId") REFERENCES "Medications" ("Id") ON DELETE CASCADE
+);
+2026-05-08 22:46:35.515 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "DietPlanItems" (
+    "Id" uuid NOT NULL,
+    "PlanId" uuid NOT NULL,
+    "DayOfWeek" integer NOT NULL,
+    "MealType" character varying(50) NOT NULL,
+    "Title" character varying(200) NOT NULL,
+    "RecipeId" uuid,
+    "CaloriesEstimated" numeric(18,2),
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_DietPlanItems" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_DietPlanItems_DietPlans_PlanId" FOREIGN KEY ("PlanId") REFERENCES "DietPlans" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_DietPlanItems_Recipes_RecipeId" FOREIGN KEY ("RecipeId") REFERENCES "Recipes" ("Id") ON DELETE SET NULL
+);
+2026-05-08 22:46:35.606 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "RecipeSaved" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "RecipeId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_RecipeSaved" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_RecipeSaved_Recipes_RecipeId" FOREIGN KEY ("RecipeId") REFERENCES "Recipes" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_RecipeSaved_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:46:35.695 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatMessages_SenderId" ON "ChatMessages" ("SenderId");
+2026-05-08 22:46:35.784 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatMessages_ThreadId_SentAt" ON "ChatMessages" ("ThreadId", "SentAt");
+2026-05-08 22:46:35.871 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_ChatParticipants_ThreadId_UserId" ON "ChatParticipants" ("ThreadId", "UserId");
+2026-05-08 22:46:35.960 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatParticipants_UserId" ON "ChatParticipants" ("UserId");
+2026-05-08 22:46:36.050 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatThreads_RequestStatus_CreatedAt" ON "ChatThreads" ("RequestStatus", "CreatedAt");
+2026-05-08 22:46:36.138 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Comments_PostId" ON "Comments" ("PostId");
+2026-05-08 22:46:36.225 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Comments_UserId" ON "Comments" ("UserId");
+2026-05-08 22:46:36.312 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_CommunityPosts_IsDeleted" ON "CommunityPosts" ("IsDeleted");
+2026-05-08 22:46:36.399 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_CommunityPosts_SharedPostId" ON "CommunityPosts" ("SharedPostId");
+2026-05-08 22:46:36.489 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_CommunityPosts_UserId_CreatedAt" ON "CommunityPosts" ("UserId", "CreatedAt");
+2026-05-08 22:46:36.578 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_ContentReports_ContentType_ContentId_ReporterId" ON "ContentReports" ("ContentType", "ContentId", "ReporterId");
+2026-05-08 22:46:36.666 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ContentReports_ReportedUserId" ON "ContentReports" ("ReportedUserId");
+2026-05-08 22:46:36.755 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ContentReports_ReporterId" ON "ContentReports" ("ReporterId");
+2026-05-08 22:46:36.844 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ContentReports_Status_CreatedAt" ON "ContentReports" ("Status", "CreatedAt");
+2026-05-08 22:46:36.931 +03:00 [INF] Executed DbCommand (85ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_DietPlanItems_PlanId" ON "DietPlanItems" ("PlanId");
+2026-05-08 22:46:37.019 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_DietPlanItems_RecipeId" ON "DietPlanItems" ("RecipeId");
+2026-05-08 22:46:37.107 +03:00 [INF] Executed DbCommand (85ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_DietPlans_CreatedBy" ON "DietPlans" ("CreatedBy");
+2026-05-08 22:46:37.197 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_FoodItems_Name" ON "FoodItems" ("Name");
+2026-05-08 22:46:37.284 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_HiddenPosts_PostId" ON "HiddenPosts" ("PostId");
+2026-05-08 22:46:37.373 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_HiddenPosts_UserId_PostId" ON "HiddenPosts" ("UserId", "PostId");
+2026-05-08 22:46:37.461 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_MealLogs_FoodId" ON "MealLogs" ("FoodId");
+2026-05-08 22:46:37.551 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_MealLogs_UserId_CreatedAt" ON "MealLogs" ("UserId", "CreatedAt");
+2026-05-08 22:46:37.639 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Medications_UserId" ON "Medications" ("UserId");
+2026-05-08 22:46:37.730 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_MedicationSchedules_MedicationId_ScheduledDate" ON "MedicationSchedules" ("MedicationId", "ScheduledDate");
+2026-05-08 22:46:37.818 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Notifications_ActorUserId" ON "Notifications" ("ActorUserId");
+2026-05-08 22:46:37.908 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Notifications_UserId_IsRead_CreatedAt" ON "Notifications" ("UserId", "IsRead", "CreatedAt");
+2026-05-08 22:46:38.004 +03:00 [INF] Executed DbCommand (95ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_PasswordResetCodes_UserId_ExpiresAt" ON "PasswordResetCodes" ("UserId", "ExpiresAt");
+2026-05-08 22:46:38.093 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_PostLikes_PostId_UserId" ON "PostLikes" ("PostId", "UserId");
+2026-05-08 22:46:38.183 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_PostLikes_UserId" ON "PostLikes" ("UserId");
+2026-05-08 22:46:38.270 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Recipes_AuthorId" ON "Recipes" ("AuthorId");
+2026-05-08 22:46:38.359 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_RecipeSaved_RecipeId" ON "RecipeSaved" ("RecipeId");
+2026-05-08 22:46:38.448 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_RecipeSaved_UserId_RecipeId" ON "RecipeSaved" ("UserId", "RecipeId");
+2026-05-08 22:46:38.538 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_RefreshTokens_UserId_ExpiresAt" ON "RefreshTokens" ("UserId", "ExpiresAt");
+2026-05-08 22:46:38.626 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserAllergies_UserId_AllergyName" ON "UserAllergies" ("UserId", "AllergyName");
+2026-05-08 22:46:38.714 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserBlocks_BlockedId" ON "UserBlocks" ("BlockedId");
+2026-05-08 22:46:38.804 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserBlocks_BlockerId_BlockedId" ON "UserBlocks" ("BlockerId", "BlockedId");
+2026-05-08 22:46:38.897 +03:00 [INF] Executed DbCommand (91ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserDislikedFoods_UserId_FoodName" ON "UserDislikedFoods" ("UserId", "FoodName");
+2026-05-08 22:46:38.986 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserFollows_FollowerId_FollowingId" ON "UserFollows" ("FollowerId", "FollowingId");
+2026-05-08 22:46:39.074 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserFollows_FollowingId" ON "UserFollows" ("FollowingId");
+2026-05-08 22:46:39.163 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserPlans_PlanId" ON "UserPlans" ("PlanId");
+2026-05-08 22:46:39.259 +03:00 [INF] Executed DbCommand (93ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserPlans_UserId" ON "UserPlans" ("UserId");
+2026-05-08 22:46:39.347 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Users_Email" ON "Users" ("Email");
+2026-05-08 22:46:39.451 +03:00 [ERR] Failed executing DbCommand (101ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Users_Username" ON "Users" ("Username") WHERE [Username] IS NOT NULL;
+2026-05-08 22:52:03.108 +03:00 [INF] Executed DbCommand (114ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:52:03.226 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-08 22:52:03.858 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:52:04.468 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:52:04.557 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-08 22:52:04.566 +03:00 [INF] Applying migration '20260508191819_InitialPostgresSchema'.
+2026-05-08 22:52:04.732 +03:00 [INF] Executed DbCommand (98ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ChatThreads" (
+    "Id" uuid NOT NULL,
+    "RequestStatus" character varying(30) NOT NULL DEFAULT 'Pending',
+    "RequestedByUserId" uuid,
+    "AcceptedAt" timestamp with time zone,
+    "DeletedAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ChatThreads" PRIMARY KEY ("Id")
+);
+2026-05-08 22:52:04.825 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "FoodItems" (
+    "Id" uuid NOT NULL,
+    "Name" character varying(200) NOT NULL,
+    "CaloriesPer100g" numeric(18,2) NOT NULL,
+    "ProteinPer100g" numeric(18,2) NOT NULL,
+    "FatPer100g" numeric(18,2) NOT NULL,
+    "CarbsPer100g" numeric(18,2) NOT NULL,
+    "ServingSize" text,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_FoodItems" PRIMARY KEY ("Id")
+);
+2026-05-08 22:52:04.925 +03:00 [INF] Executed DbCommand (99ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Users" (
+    "Id" uuid NOT NULL,
+    "Email" character varying(256) NOT NULL,
+    "PasswordHash" text NOT NULL,
+    "Name" character varying(200) NOT NULL,
+    "Username" character varying(100),
+    "BirthDate" timestamp with time zone,
+    "Location" character varying(100),
+    "Phone" character varying(30),
+    "ProfileImageUrl" text,
+    "Age" integer,
+    "WeightKg" numeric(18,2),
+    "HeightCm" numeric(18,2),
+    "Gender" character varying(20),
+    "ActivityLevel" character varying(50),
+    "Goal" character varying(200),
+    "Role" character varying(20) NOT NULL DEFAULT 'User',
+    "IsBanned" boolean NOT NULL DEFAULT FALSE,
+    "BannedAt" timestamp with time zone,
+    "BannedReason" character varying(1000),
+    "AuthProvider" character varying(50) NOT NULL DEFAULT 'Local',
+    "ExternalProviderId" character varying(300),
+    "EmailConfirmed" boolean NOT NULL DEFAULT FALSE,
+    "EmailConfirmedAt" timestamp with time zone,
+    "EmailConfirmationTokenHash" text,
+    "EmailConfirmationTokenExpiresAt" timestamp with time zone,
+    "LastEmailConfirmationSentAt" timestamp with time zone,
+    "LastSeenAt" timestamp with time zone,
+    "FailedLoginAttemptCount" integer NOT NULL DEFAULT 0,
+    "LoginLockoutEndAt" timestamp with time zone,
+    "JwtTokenVersion" integer NOT NULL DEFAULT 0,
+    "NotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "MessageNotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "CommunityNotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "EmailNotificationsEnabled" boolean NOT NULL DEFAULT TRUE,
+    "ProfileVisibility" character varying(20) NOT NULL DEFAULT 'Public',
+    "PostsVisibility" character varying(20) NOT NULL DEFAULT 'Public',
+    "ShowOnlineStatus" boolean NOT NULL DEFAULT TRUE,
+    "ShowLastSeen" boolean NOT NULL DEFAULT TRUE,
+    "AllowMessageRequests" boolean NOT NULL DEFAULT TRUE,
+    "AllowSearchByEmail" boolean NOT NULL DEFAULT TRUE,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
+);
+2026-05-08 22:52:05.022 +03:00 [INF] Executed DbCommand (95ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ChatMessages" (
+    "Id" uuid NOT NULL,
+    "ThreadId" uuid NOT NULL,
+    "SenderId" uuid NOT NULL,
+    "MessageText" text NOT NULL DEFAULT '',
+    "MessageType" character varying(30) NOT NULL DEFAULT 'text',
+    "MediaContent" text,
+    "FileName" character varying(255),
+    "SentAt" timestamp with time zone NOT NULL,
+    "IsDeleted" boolean NOT NULL,
+    "EditedAt" timestamp with time zone,
+    "DeletedAt" timestamp with time zone,
+    "DeliveredAt" timestamp with time zone,
+    "SeenAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ChatMessages" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_ChatMessages_ChatThreads_ThreadId" FOREIGN KEY ("ThreadId") REFERENCES "ChatThreads" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_ChatMessages_Users_SenderId" FOREIGN KEY ("SenderId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.113 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ChatParticipants" (
+    "Id" uuid NOT NULL,
+    "ThreadId" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "JoinedAt" timestamp with time zone NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ChatParticipants" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_ChatParticipants_ChatThreads_ThreadId" FOREIGN KEY ("ThreadId") REFERENCES "ChatThreads" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_ChatParticipants_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.206 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "CommunityPosts" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "Content" text NOT NULL,
+    "ImageUrl" text,
+    "SharedPostId" uuid,
+    "IsDeleted" boolean NOT NULL DEFAULT FALSE,
+    "DeletedAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_CommunityPosts" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_CommunityPosts_CommunityPosts_SharedPostId" FOREIGN KEY ("SharedPostId") REFERENCES "CommunityPosts" ("Id"),
+    CONSTRAINT "FK_CommunityPosts_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.302 +03:00 [INF] Executed DbCommand (93ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ContentReports" (
+    "Id" uuid NOT NULL,
+    "ReporterId" uuid NOT NULL,
+    "ContentType" character varying(30) NOT NULL,
+    "ContentId" uuid NOT NULL,
+    "ReportedUserId" uuid,
+    "Reason" character varying(1000) NOT NULL,
+    "Status" character varying(30) NOT NULL DEFAULT 'Pending',
+    "ReviewedAt" timestamp with time zone,
+    "ReviewedByUserId" uuid,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_ContentReports" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_ContentReports_Users_ReportedUserId" FOREIGN KEY ("ReportedUserId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_ContentReports_Users_ReporterId" FOREIGN KEY ("ReporterId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.394 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "DietPlans" (
+    "Id" uuid NOT NULL,
+    "Title" character varying(200) NOT NULL,
+    "CaloriesTargetPerDay" numeric(18,2),
+    "DurationDays" integer NOT NULL,
+    "CreatedBy" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_DietPlans" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_DietPlans_Users_CreatedBy" FOREIGN KEY ("CreatedBy") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.487 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "MealLogs" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "FoodId" uuid NOT NULL,
+    "MealImageUrl" text,
+    "DetectedAt" timestamp with time zone,
+    "QuantityGrams" numeric(18,2),
+    "CalculatedCalories" numeric(18,2),
+    "CalculatedProtein" numeric(18,2),
+    "CalculatedFat" numeric(18,2),
+    "CalculatedCarbs" numeric(18,2),
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_MealLogs" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_MealLogs_FoodItems_FoodId" FOREIGN KEY ("FoodId") REFERENCES "FoodItems" ("Id") ON DELETE RESTRICT,
+    CONSTRAINT "FK_MealLogs_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.581 +03:00 [INF] Executed DbCommand (91ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Medications" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "Name" character varying(200) NOT NULL,
+    "DosageText" character varying(200),
+    "BeforeAfterMeal" character varying(20),
+    "TimesPerDay" integer NOT NULL,
+    "StartDate" timestamp with time zone,
+    "EndDate" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Medications" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Medications_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.678 +03:00 [INF] Executed DbCommand (95ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Notifications" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "ActorUserId" uuid,
+    "Title" character varying(200) NOT NULL,
+    "Message" text NOT NULL,
+    "Type" character varying(50) NOT NULL DEFAULT 'info',
+    "IsRead" boolean NOT NULL DEFAULT FALSE,
+    "ReadAt" timestamp with time zone,
+    "ScheduledFor" timestamp with time zone,
+    "RelatedEntityType" character varying(100),
+    "RelatedEntityId" uuid,
+    "ActionUrl" character varying(500),
+    "EmailSent" boolean NOT NULL DEFAULT FALSE,
+    "EmailSentAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Notifications" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Notifications_Users_ActorUserId" FOREIGN KEY ("ActorUserId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_Notifications_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.773 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "PasswordResetCodes" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "CodeHash" text NOT NULL,
+    "ExpiresAt" timestamp with time zone NOT NULL,
+    "UsedAt" timestamp with time zone,
+    "IsUsed" boolean NOT NULL DEFAULT FALSE,
+    "AttemptCount" integer NOT NULL DEFAULT 0,
+    "LastAttemptAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_PasswordResetCodes" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_PasswordResetCodes_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.866 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Recipes" (
+    "Id" uuid NOT NULL,
+    "Title" character varying(200) NOT NULL,
+    "Description" character varying(1000),
+    "ImageUrl" character varying(2000),
+    "CaloriesPerServing" numeric(18,2),
+    "Servings" integer NOT NULL,
+    "IngredientsJson" text NOT NULL,
+    "StepsJson" text NOT NULL,
+    "AuthorId" uuid,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Recipes" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Recipes_Users_AuthorId" FOREIGN KEY ("AuthorId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:05.959 +03:00 [INF] Executed DbCommand (91ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "RefreshTokens" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "TokenHash" text NOT NULL,
+    "ExpiresAt" timestamp with time zone NOT NULL,
+    "RevokedAt" timestamp with time zone,
+    "ReplacedByTokenHash" text,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_RefreshTokens" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_RefreshTokens_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.052 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserAllergies" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "AllergyName" character varying(200) NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserAllergies" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserAllergies_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.144 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserBlocks" (
+    "Id" uuid NOT NULL,
+    "BlockerId" uuid NOT NULL,
+    "BlockedId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserBlocks" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserBlocks_Users_BlockedId" FOREIGN KEY ("BlockedId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_UserBlocks_Users_BlockerId" FOREIGN KEY ("BlockerId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.236 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserDislikedFoods" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "FoodName" character varying(200) NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserDislikedFoods" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserDislikedFoods_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.329 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserFollows" (
+    "Id" uuid NOT NULL,
+    "FollowerId" uuid NOT NULL,
+    "FollowingId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserFollows" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserFollows_Users_FollowerId" FOREIGN KEY ("FollowerId") REFERENCES "Users" ("Id"),
+    CONSTRAINT "FK_UserFollows_Users_FollowingId" FOREIGN KEY ("FollowingId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.421 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WaterGoals" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "DailyTargetMl" integer NOT NULL,
+    "RemindEveryMinutes" integer NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_WaterGoals" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_WaterGoals_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.512 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WaterLogs" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "AmountMl" integer NOT NULL,
+    "LoggedAt" timestamp with time zone NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_WaterLogs" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_WaterLogs_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.605 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WaterReminders" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "ReminderDate" timestamp with time zone NOT NULL,
+    "TimeOfDay" interval NOT NULL,
+    "AmountMl" integer NOT NULL,
+    "IsCompleted" boolean NOT NULL DEFAULT FALSE,
+    "CompletedAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_WaterReminders" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_WaterReminders_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.699 +03:00 [INF] Executed DbCommand (91ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Comments" (
+    "Id" uuid NOT NULL,
+    "PostId" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "Text" text NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Comments" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Comments_CommunityPosts_PostId" FOREIGN KEY ("PostId") REFERENCES "CommunityPosts" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Comments_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.791 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "HiddenPosts" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "PostId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_HiddenPosts" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_HiddenPosts_CommunityPosts_PostId" FOREIGN KEY ("PostId") REFERENCES "CommunityPosts" ("Id"),
+    CONSTRAINT "FK_HiddenPosts_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.884 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "PostLikes" (
+    "Id" uuid NOT NULL,
+    "PostId" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_PostLikes" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_PostLikes_CommunityPosts_PostId" FOREIGN KEY ("PostId") REFERENCES "CommunityPosts" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_PostLikes_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:06.978 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserPlans" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "PlanId" uuid NOT NULL,
+    "StartDate" timestamp with time zone,
+    "EndDate" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_UserPlans" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_UserPlans_DietPlans_PlanId" FOREIGN KEY ("PlanId") REFERENCES "DietPlans" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_UserPlans_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:07.070 +03:00 [INF] Executed DbCommand (91ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "MedicationSchedules" (
+    "Id" uuid NOT NULL,
+    "MedicationId" uuid NOT NULL,
+    "ScheduledDate" timestamp with time zone NOT NULL,
+    "TimeOfDay" interval NOT NULL,
+    "IsTaken" boolean NOT NULL DEFAULT FALSE,
+    "TakenAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_MedicationSchedules" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_MedicationSchedules_Medications_MedicationId" FOREIGN KEY ("MedicationId") REFERENCES "Medications" ("Id") ON DELETE CASCADE
+);
+2026-05-08 22:52:07.164 +03:00 [INF] Executed DbCommand (91ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "DietPlanItems" (
+    "Id" uuid NOT NULL,
+    "PlanId" uuid NOT NULL,
+    "DayOfWeek" integer NOT NULL,
+    "MealType" character varying(50) NOT NULL,
+    "Title" character varying(200) NOT NULL,
+    "RecipeId" uuid,
+    "CaloriesEstimated" numeric(18,2),
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_DietPlanItems" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_DietPlanItems_DietPlans_PlanId" FOREIGN KEY ("PlanId") REFERENCES "DietPlans" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_DietPlanItems_Recipes_RecipeId" FOREIGN KEY ("RecipeId") REFERENCES "Recipes" ("Id") ON DELETE SET NULL
+);
+2026-05-08 22:52:07.259 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "RecipeSaved" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "RecipeId" uuid NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_RecipeSaved" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_RecipeSaved_Recipes_RecipeId" FOREIGN KEY ("RecipeId") REFERENCES "Recipes" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_RecipeSaved_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id")
+);
+2026-05-08 22:52:07.351 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatMessages_SenderId" ON "ChatMessages" ("SenderId");
+2026-05-08 22:52:07.440 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatMessages_ThreadId_SentAt" ON "ChatMessages" ("ThreadId", "SentAt");
+2026-05-08 22:52:07.528 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_ChatParticipants_ThreadId_UserId" ON "ChatParticipants" ("ThreadId", "UserId");
+2026-05-08 22:52:07.618 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatParticipants_UserId" ON "ChatParticipants" ("UserId");
+2026-05-08 22:52:07.707 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChatThreads_RequestStatus_CreatedAt" ON "ChatThreads" ("RequestStatus", "CreatedAt");
+2026-05-08 22:52:07.797 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Comments_PostId" ON "Comments" ("PostId");
+2026-05-08 22:52:07.887 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Comments_UserId" ON "Comments" ("UserId");
+2026-05-08 22:52:07.976 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_CommunityPosts_IsDeleted" ON "CommunityPosts" ("IsDeleted");
+2026-05-08 22:52:08.088 +03:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_CommunityPosts_SharedPostId" ON "CommunityPosts" ("SharedPostId");
+2026-05-08 22:52:08.176 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_CommunityPosts_UserId_CreatedAt" ON "CommunityPosts" ("UserId", "CreatedAt");
+2026-05-08 22:52:08.267 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_ContentReports_ContentType_ContentId_ReporterId" ON "ContentReports" ("ContentType", "ContentId", "ReporterId");
+2026-05-08 22:52:08.357 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ContentReports_ReportedUserId" ON "ContentReports" ("ReportedUserId");
+2026-05-08 22:52:08.446 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ContentReports_ReporterId" ON "ContentReports" ("ReporterId");
+2026-05-08 22:52:08.535 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ContentReports_Status_CreatedAt" ON "ContentReports" ("Status", "CreatedAt");
+2026-05-08 22:52:08.626 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_DietPlanItems_PlanId" ON "DietPlanItems" ("PlanId");
+2026-05-08 22:52:08.715 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_DietPlanItems_RecipeId" ON "DietPlanItems" ("RecipeId");
+2026-05-08 22:52:08.804 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_DietPlans_CreatedBy" ON "DietPlans" ("CreatedBy");
+2026-05-08 22:52:08.893 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_FoodItems_Name" ON "FoodItems" ("Name");
+2026-05-08 22:52:08.983 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_HiddenPosts_PostId" ON "HiddenPosts" ("PostId");
+2026-05-08 22:52:09.074 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_HiddenPosts_UserId_PostId" ON "HiddenPosts" ("UserId", "PostId");
+2026-05-08 22:52:09.163 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_MealLogs_FoodId" ON "MealLogs" ("FoodId");
+2026-05-08 22:52:09.253 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_MealLogs_UserId_CreatedAt" ON "MealLogs" ("UserId", "CreatedAt");
+2026-05-08 22:52:09.343 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Medications_UserId" ON "Medications" ("UserId");
+2026-05-08 22:52:09.434 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_MedicationSchedules_MedicationId_ScheduledDate" ON "MedicationSchedules" ("MedicationId", "ScheduledDate");
+2026-05-08 22:52:09.525 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Notifications_ActorUserId" ON "Notifications" ("ActorUserId");
+2026-05-08 22:52:09.615 +03:00 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Notifications_UserId_IsRead_CreatedAt" ON "Notifications" ("UserId", "IsRead", "CreatedAt");
+2026-05-08 22:52:09.705 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_PasswordResetCodes_UserId_ExpiresAt" ON "PasswordResetCodes" ("UserId", "ExpiresAt");
+2026-05-08 22:52:09.794 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_PostLikes_PostId_UserId" ON "PostLikes" ("PostId", "UserId");
+2026-05-08 22:52:09.884 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_PostLikes_UserId" ON "PostLikes" ("UserId");
+2026-05-08 22:52:09.973 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Recipes_AuthorId" ON "Recipes" ("AuthorId");
+2026-05-08 22:52:10.062 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_RecipeSaved_RecipeId" ON "RecipeSaved" ("RecipeId");
+2026-05-08 22:52:10.153 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_RecipeSaved_UserId_RecipeId" ON "RecipeSaved" ("UserId", "RecipeId");
+2026-05-08 22:52:10.242 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_RefreshTokens_UserId_ExpiresAt" ON "RefreshTokens" ("UserId", "ExpiresAt");
+2026-05-08 22:52:10.331 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserAllergies_UserId_AllergyName" ON "UserAllergies" ("UserId", "AllergyName");
+2026-05-08 22:52:10.423 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserBlocks_BlockedId" ON "UserBlocks" ("BlockedId");
+2026-05-08 22:52:10.512 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserBlocks_BlockerId_BlockedId" ON "UserBlocks" ("BlockerId", "BlockedId");
+2026-05-08 22:52:10.603 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserDislikedFoods_UserId_FoodName" ON "UserDislikedFoods" ("UserId", "FoodName");
+2026-05-08 22:52:10.691 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_UserFollows_FollowerId_FollowingId" ON "UserFollows" ("FollowerId", "FollowingId");
+2026-05-08 22:52:10.782 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserFollows_FollowingId" ON "UserFollows" ("FollowingId");
+2026-05-08 22:52:10.871 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserPlans_PlanId" ON "UserPlans" ("PlanId");
+2026-05-08 22:52:10.961 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserPlans_UserId" ON "UserPlans" ("UserId");
+2026-05-08 22:52:11.051 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Users_Email" ON "Users" ("Email");
+2026-05-08 22:52:11.143 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Users_Username" ON "Users" ("Username") WHERE "Username" IS NOT NULL;
+2026-05-08 22:52:11.238 +03:00 [INF] Executed DbCommand (92ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_WaterGoals_UserId" ON "WaterGoals" ("UserId");
+2026-05-08 22:52:11.327 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_WaterLogs_UserId_LoggedAt" ON "WaterLogs" ("UserId", "LoggedAt");
+2026-05-08 22:52:11.419 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_WaterReminders_UserId_ReminderDate_TimeOfDay" ON "WaterReminders" ("UserId", "ReminderDate", "TimeOfDay");
+2026-05-08 22:52:11.508 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260508191819_InitialPostgresSchema', '8.0.22');
+2026-05-08 22:52:11.606 +03:00 [INF] Applying migration '20260508194209_InitialCreate'.
+2026-05-08 22:52:11.725 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260508194209_InitialCreate', '8.0.22');
+2026-05-08 22:53:17.159 +03:00 [INF] Executed DbCommand (129ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:53:17.279 +03:00 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-08 22:53:17.903 +03:00 [INF] Executed DbCommand (88ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:53:18.522 +03:00 [INF] Executed DbCommand (86ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-08 22:53:18.612 +03:00 [INF] Executed DbCommand (87ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-08 22:53:18.630 +03:00 [INF] No migrations were applied. The database is already up to date.
