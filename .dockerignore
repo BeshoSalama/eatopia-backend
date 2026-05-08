@@ -1,0 +1,30 @@
+# Dependency folders
+frontend-src/node_modules/
+frontend-src/build/
+ai/.venv/
+
+# Build outputs
+**/bin/
+**/obj/
+**/dist/
+**/build/
+
+# Local IDE/cache files
+.git/
+.github/
+**/.vs/
+**/.vscode/
+
+# Logs and runtime data
+*.log
+**/Logs/
+**/wwwroot/uploads/
+
+# Local-only environment files
+*.local
+*.local.*
+frontend-src/.env.local
+frontend-src/.env.*.local
+
+# Large exploratory notebooks are not required by the production API image.
+ai/notebooks/
