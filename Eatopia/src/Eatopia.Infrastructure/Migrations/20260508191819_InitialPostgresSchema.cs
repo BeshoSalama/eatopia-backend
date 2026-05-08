@@ -948,11 +948,11 @@ namespace Eatopia.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Username",
-                table: "Users",
-                column: "Username",
-                unique: true,
-                filter: "[Username] IS NOT NULL");
+    		name: "IX_Users_Username",
+    		table: "Users",
+    		column: "Username",
+    		unique: true,
+    		filter: "\"Username\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WaterGoals_UserId",
