@@ -7,7 +7,7 @@ COPY src/Eatopia.Application/Eatopia.Application.csproj src/Eatopia.Application/
 COPY src/Eatopia.Domain/Eatopia.Domain.csproj src/Eatopia.Domain/
 COPY src/Eatopia.Infrastructure/Eatopia.Infrastructure.csproj src/Eatopia.Infrastructure/
 
-RUN dotnet restore Eatopia.sln
+RUN dotnet restore src/Eatopia.Api/Eatopia.Api.csproj
 
 COPY . .
 
