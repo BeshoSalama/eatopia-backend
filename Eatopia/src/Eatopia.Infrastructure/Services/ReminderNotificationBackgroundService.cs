@@ -53,8 +53,8 @@ public class ReminderNotificationBackgroundService : BackgroundService
         var notificationService = scope.ServiceProvider.GetRequiredService<NotificationService>();
 
         // These reminders are entered by the user in the local UI time.
-        // DateTime.Now keeps local development behavior intuitive.
-        var now = DateTime.Now;
+        // DateTime.UtcNow keeps local development behavior intuitive.
+        var now = DateTime.UtcNow;
         var today = now.Date;
         var currentTime = now.TimeOfDay;
 
