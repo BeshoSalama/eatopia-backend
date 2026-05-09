@@ -19,6 +19,11 @@ public class AiController : ControllerBase
         ".jpg", ".jpeg", ".png", ".webp"
     };
 
+    private static readonly HashSet<string> AllowedImageContentTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg", "image/png", "image/webp"
+    };
+
     private readonly IFoodAiClient _aiClient;
     private readonly EatopiaDbContext _context;
 
@@ -65,8 +70,9 @@ public class AiController : ControllerBase
         if (image == null || image.Length == 0)
             return BadRequest(new { success = false, message = "No image uploaded." });
 
-        if (!image.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
-            return BadRequest(new { success = false, message = "Uploaded file must be an image." });
+        var contentType = image.ContentType.Split(';', 2)[0].Trim();
+        if (!AllowedImageContentTypes.Contains(contentType))
+            return BadRequest(new { success = false, message = "Supported image content types are image/jpeg, image/png, and image/webp." });
 
         var extension = Path.GetExtension(image.FileName);
         if (string.IsNullOrWhiteSpace(extension) || !AllowedImageExtensions.Contains(extension))
@@ -78,7 +84,7 @@ public class AiController : ControllerBase
             var result = await _aiClient.AnalyzeFoodImageAsync(
                 stream,
                 image.FileName,
-                image.ContentType,
+                contentType,
                 cancellationToken);
 
             return Ok(new { success = true, result, data = result });

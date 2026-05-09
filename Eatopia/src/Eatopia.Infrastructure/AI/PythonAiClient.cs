@@ -19,6 +19,19 @@ public class PythonAiClient : IFoodAiClient
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
+    private static readonly Dictionary<string, string> ImageContentTypesByExtension = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [".jpg"] = "image/jpeg",
+        [".jpeg"] = "image/jpeg",
+        [".png"] = "image/png",
+        [".webp"] = "image/webp"
+    };
+
+    private static readonly HashSet<string> AllowedImageContentTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg", "image/png", "image/webp"
+    };
+
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly ILogger<PythonAiClient> _logger;
@@ -126,10 +139,8 @@ public class PythonAiClient : IFoodAiClient
         using var form = new MultipartFormDataContent();
         using var streamContent = new StreamContent(imageStream);
 
-        streamContent.Headers.ContentType = TryParseMediaType(contentType)
-            ?? new MediaTypeHeaderValue("application/octet-stream");
-
         var safeFileName = Path.GetFileName(string.IsNullOrWhiteSpace(fileName) ? "scan.jpg" : fileName);
+        streamContent.Headers.ContentType = new MediaTypeHeaderValue(ResolveImageContentType(safeFileName, contentType));
         form.Add(streamContent, "image", safeFileName);
         request.Content = form;
 
@@ -545,12 +556,21 @@ public class PythonAiClient : IFoodAiClient
         }
     }
 
-    private static MediaTypeHeaderValue? TryParseMediaType(string? contentType)
+    private static string ResolveImageContentType(string fileName, string? contentType)
     {
-        if (string.IsNullOrWhiteSpace(contentType))
-            return null;
+        var normalizedContentType = contentType?.Split(';', 2)[0].Trim();
+        if (!string.IsNullOrWhiteSpace(normalizedContentType) &&
+            AllowedImageContentTypes.Contains(normalizedContentType) &&
+            MediaTypeHeaderValue.TryParse(normalizedContentType, out _))
+        {
+            return normalizedContentType;
+        }
 
-        return MediaTypeHeaderValue.TryParse(contentType, out var mediaType) ? mediaType : null;
+        var extension = Path.GetExtension(fileName);
+        if (ImageContentTypesByExtension.TryGetValue(extension, out var inferredContentType))
+            return inferredContentType;
+
+        throw new ApiException("Supported image content types are image/jpeg, image/png, and image/webp.", 400, "VALIDATION_ERROR");
     }
 
     private static string ExtractJson(string output)
