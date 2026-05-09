@@ -47,6 +47,18 @@ public class EatopiaDbContext : DbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        NormalizeDateTimesForPostgres();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        NormalizeDateTimesForPostgres();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Users
@@ -538,7 +550,7 @@ public class EatopiaDbContext : DbContext
             entity.Property(x => x.FileName).HasMaxLength(255);
             // Do not configure IsDeleted as store-generated here. Some existing local databases
             // have the NOT NULL column without a default constraint; if EF omits
-            // the value, SQL Server tries to insert NULL and chat send fails.
+            // the value, the database tries to insert NULL and chat send fails.
             entity.Property(x => x.IsDeleted).IsRequired();
             entity.Property(x => x.EditedAt);
             entity.Property(x => x.DeletedAt);
@@ -612,5 +624,30 @@ public class EatopiaDbContext : DbContext
         });
 
         base.OnModelCreating(modelBuilder);
+    }
+
+    private void NormalizeDateTimesForPostgres()
+    {
+        foreach (var entry in ChangeTracker.Entries().Where(x => x.State is EntityState.Added or EntityState.Modified))
+        {
+            foreach (var property in entry.Properties)
+            {
+                var propertyType = Nullable.GetUnderlyingType(property.Metadata.ClrType) ?? property.Metadata.ClrType;
+                if (propertyType != typeof(DateTime) || property.CurrentValue is not DateTime dateTime)
+                    continue;
+
+                property.CurrentValue = EnsureUtc(dateTime);
+            }
+        }
+    }
+
+    private static DateTime EnsureUtc(DateTime value)
+    {
+        return value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+        };
     }
 }

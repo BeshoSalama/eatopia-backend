@@ -71,19 +71,19 @@ public class UploadsController : ControllerBase
         }
 
         var relativeUrl = UploadStorageHelper.ToRelativeUploadUrl(Path.Combine(relativeFolder, safeFileName));
-        var absoluteUrl = $"{Request.Scheme}://{Request.Host}{relativeUrl}";
+        var absoluteUrl = BuildAbsoluteUploadUrl(relativeUrl);
 
         _logger.LogInformation("Uploaded file {FileName} as {Url}", file.FileName, relativeUrl);
 
         return Ok(new
         {
             success = true,
+            // Browser clients can render this directly from Vercel.
+            url = absoluteUrl,
+            absoluteUrl,
             // Store this value in the database. It stays valid if the API port/domain changes.
-            url = relativeUrl,
             relativeUrl,
             storedUrl = relativeUrl,
-            // Use this only for previewing/debugging from API clients.
-            absoluteUrl,
             fileName = file.FileName,
             size = file.Length,
             contentType = file.ContentType
@@ -162,5 +162,19 @@ public class UploadsController : ControllerBase
         }
 
         return false;
+    }
+
+    private string BuildAbsoluteUploadUrl(string relativeUrl)
+    {
+        var configuredBaseUrl = (_configuration["Api:BaseUrl"] ?? Environment.GetEnvironmentVariable("API_BASE_URL"))?.Trim().TrimEnd('/');
+        if (!string.IsNullOrWhiteSpace(configuredBaseUrl))
+        {
+            if (configuredBaseUrl.EndsWith("/api", StringComparison.OrdinalIgnoreCase))
+                configuredBaseUrl = configuredBaseUrl[..^4];
+
+            return $"{configuredBaseUrl}{relativeUrl}";
+        }
+
+        return $"{Request.Scheme}://{Request.Host}{relativeUrl}";
     }
 }

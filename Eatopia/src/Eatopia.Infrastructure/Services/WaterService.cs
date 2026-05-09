@@ -98,7 +98,7 @@ public class WaterService
 
     public async Task<List<object>> GetRemindersAsync(Guid userId, DateTime? date = null)
     {
-        var day = (date ?? DateTime.Now).Date;
+        var day = (date ?? DateTime.UtcNow).Date;
         await EnsureDefaultRemindersAsync(userId, day);
 
         var reminders = await _context.WaterReminders
@@ -112,7 +112,7 @@ public class WaterService
 
     public async Task<List<object>> UpsertRemindersAsync(Guid userId, UpsertWaterRemindersDto dto)
     {
-        var day = (dto.Date ?? DateTime.Now).Date;
+        var day = (dto.Date ?? DateTime.UtcNow).Date;
         var existing = await _context.WaterReminders.Where(x => x.UserId == userId && x.ReminderDate == day).ToListAsync();
 
         _context.WaterReminders.RemoveRange(existing);
@@ -210,7 +210,7 @@ public class WaterService
 
     private static string FormatDisplayTime(TimeSpan time)
     {
-        var date = DateTime.Today.Add(time);
+        var date = new DateTime(2000, 1, 1).Add(time);
         return date.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
     }
 }

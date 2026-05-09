@@ -1,4 +1,5 @@
 using Eatopia.Application.DTOs.AI;
+using Eatopia.Application.Exceptions;
 using Eatopia.Application.Interfaces;
 using Eatopia.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +32,7 @@ public class AiController : ControllerBase
     [HttpPost("diet-plan")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GenerateDietPlan([FromBody] GenerateFrontendDietPlanRequestDto dto)
+    public async Task<IActionResult> GenerateDietPlan([FromBody] GenerateFrontendDietPlanRequestDto dto, CancellationToken cancellationToken)
     {
         NormalizeDietGoalFromPreferences(dto);
         await EnrichDietPlanRequestFromProfileAsync(dto);
@@ -48,7 +49,7 @@ public class AiController : ControllerBase
             });
         }
 
-        var response = await _aiClient.GenerateDietPlanAsync(dto);
+        var response = await _aiClient.GenerateDietPlanAsync(dto, cancellationToken);
         return Ok(response);
     }
 
@@ -59,7 +60,7 @@ public class AiController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = 8 * 1024 * 1024)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ScanMeal([FromForm] IFormFile image)
+    public async Task<IActionResult> ScanMeal([FromForm] IFormFile image, CancellationToken cancellationToken)
     {
         if (image == null || image.Length == 0)
             return BadRequest(new { success = false, message = "No image uploaded." });
@@ -71,30 +72,42 @@ public class AiController : ControllerBase
         if (string.IsNullOrWhiteSpace(extension) || !AllowedImageExtensions.Contains(extension))
             return BadRequest(new { success = false, message = "Supported images are JPG, PNG, and WebP." });
 
-        var tempFolder = Path.Combine(Path.GetTempPath(), "eatopia-ai-scans");
-        Directory.CreateDirectory(tempFolder);
-
-        var tempPath = Path.Combine(tempFolder, $"{Guid.NewGuid():N}{extension.ToLowerInvariant()}");
-        await using (var stream = System.IO.File.Create(tempPath))
-        {
-            await image.CopyToAsync(stream);
-        }
-
         try
         {
-            var result = await _aiClient.AnalyzeFoodImageAsync(tempPath);
+            await using var stream = image.OpenReadStream();
+            var result = await _aiClient.AnalyzeFoodImageAsync(
+                stream,
+                image.FileName,
+                image.ContentType,
+                cancellationToken);
+
             return Ok(new { success = true, result, data = result });
         }
-        finally
+        catch (ApiException ex)
         {
-            try
+            return StatusCode(ex.StatusCode, new
             {
-                System.IO.File.Delete(tempPath);
-            }
-            catch
+                success = false,
+                message = ex.Message,
+                error = new
+                {
+                    code = ex.Code,
+                    message = ex.Message
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, new
             {
-                // Temporary scan images are best-effort cleanup only.
-            }
+                success = false,
+                message = $"AI scan failed: {ex.Message}",
+                error = new
+                {
+                    code = "AI_SCAN_FAILED",
+                    message = ex.Message
+                }
+            });
         }
     }
 

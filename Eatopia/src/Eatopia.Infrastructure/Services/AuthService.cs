@@ -47,8 +47,8 @@ public class AuthService
             Name = name,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             BirthDate = dto.BirthDate.HasValue
-   	    	? DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc)
-    	    	: null,
+                ? AsUtc(dto.BirthDate.Value)
+                : null,
             Location = dto.Location?.Trim(),
             Gender = dto.Gender?.Trim(),
             Phone = dto.Phone?.Trim(),
@@ -451,7 +451,7 @@ public class AuthService
             }
         }
         if (dto.BirthDate.HasValue)
-    		user.BirthDate = DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc);
+            user.BirthDate = AsUtc(dto.BirthDate.Value);
         if (dto.Age.HasValue) user.Age = dto.Age.Value; else if (dto.BirthDate.HasValue) user.Age = CalculateAge(dto.BirthDate.Value);
         if (dto.WeightKg.HasValue) user.WeightKg = dto.WeightKg.Value;
         if (dto.HeightCm.HasValue) user.HeightCm = dto.HeightCm.Value;
@@ -703,5 +703,6 @@ public class AuthService
 
         return candidate;
     }
+    private static DateTime AsUtc(DateTime value) => value.Kind == DateTimeKind.Utc ? value : DateTime.SpecifyKind(value.Date, DateTimeKind.Utc);
     private static int CalculateAge(DateTime birthDate) { var today = DateTime.UtcNow.Date; var age = today.Year - birthDate.Date.Year; if (birthDate.Date > today.AddYears(-age)) age--; return Math.Max(age, 0); }
 }

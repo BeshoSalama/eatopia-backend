@@ -5,7 +5,7 @@ namespace Eatopia.Api.Serialization;
 
 /// <summary>
 /// Accepts frontend time values as "HH:mm", "HH:mm:ss" or normal TimeSpan strings.
-/// Serializes as "HH:mm:ss" so SQL Server Time columns bind consistently.
+/// Serializes as "HH:mm:ss" so database time columns bind consistently.
 /// </summary>
 public sealed class FlexibleTimeSpanJsonConverter : JsonConverter<TimeSpan>
 {

@@ -130,7 +130,7 @@ public class MedicationService
 
     public async Task<List<object>> GetTodaySchedulesAsync(Guid userId)
     {
-        var today = DateTime.Now.Date;
+        var today = DateTime.UtcNow.Date;
 
         var schedules = await _context.MedicationSchedules
             .Include(x => x.Medication)
@@ -213,7 +213,7 @@ public class MedicationService
 
     private static object ToFrontendMedication(Medication med, List<MedicationSchedule> schedules)
     {
-        var today = DateTime.Now.Date;
+        var today = DateTime.UtcNow.Date;
         var todaySchedules = schedules.Where(x => x.ScheduledDate.Date == today).OrderBy(x => x.TimeOfDay).ToList();
         var displaySchedules = todaySchedules.Count > 0 ? todaySchedules : schedules
             .GroupBy(x => x.TimeOfDay)

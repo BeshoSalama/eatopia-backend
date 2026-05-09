@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.HttpOverrides;
 using System.Text;
 using System.Text.Json.Serialization;
 using Serilog;
@@ -30,6 +31,13 @@ ApplyDeploymentEnvironmentAliases(builder.Configuration);
 builder.Host.UseSerilog();
 
 var isTesting = builder.Environment.IsEnvironment("Testing");
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // Controllers + JSON
 builder.Services
@@ -220,9 +228,10 @@ if (!builder.Environment.IsDevelopment() && !isTesting)
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
     if (string.IsNullOrWhiteSpace(connectionString) ||
         connectionString.Contains("Server=.;", StringComparison.OrdinalIgnoreCase) ||
-        connectionString.Contains("YOUR_SQL", StringComparison.OrdinalIgnoreCase))
+        connectionString.Contains("YOUR_SQL", StringComparison.OrdinalIgnoreCase) ||
+        connectionString.Contains("YOUR_POSTGRES", StringComparison.OrdinalIgnoreCase))
     {
-        throw new InvalidOperationException("Production requires a real SQL Server connection string. Set ConnectionStrings__DefaultConnection.");
+        throw new InvalidOperationException("Production requires a real PostgreSQL connection string. Set ConnectionStrings__DefaultConnection.");
     }
 
     if (configuredOrigins.Any(origin => origin.Contains("localhost", StringComparison.OrdinalIgnoreCase)))
@@ -287,12 +296,17 @@ if (!isTesting)
     builder.Services.AddHostedService<ReminderNotificationBackgroundService>();
 }
 
-// AI Client: bridges the ASP.NET API to the Python models in the repository-level ai folder.
-builder.Services.AddScoped<IFoodAiClient, PythonAiClient>();
+// AI Client: uses AI:ServiceUrl/AI_SERVICE_URL in production and falls back to the local Python CLI for development.
+builder.Services
+    .AddHttpClient<IFoodAiClient, PythonAiClient>(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(180);
+    });
 
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
+app.UseForwardedHeaders();
 
 // Swagger in development
 if (app.Environment.IsDevelopment())
@@ -372,7 +386,7 @@ if (!isTesting)
 	//}
 	//catch (Exception ex)
 	//{
-	//    Log.Error(ex, "Database schema repair failed. Check SQL Server connectivity and permissions.");
+	//    Log.Error(ex, "Database schema repair failed. Check database connectivity and permissions.");
 	//}
 
         if (app.Environment.IsDevelopment())
@@ -406,6 +420,10 @@ static void ApplyDeploymentEnvironmentAliases(ConfigurationManager configuration
     SetIfPresent(configuration, "API_BASE_URL", "Api:BaseUrl");
     SetIfPresent(configuration, "FRONTEND_URL", "Frontend:BaseUrl");
     SetIfPresent(configuration, "AI_SERVICE_URL", "AI:ServiceUrl");
+    SetConnectionStringIfPresent(configuration, "DATABASE_URL");
+    SetConnectionStringIfPresent(configuration, "POSTGRES_CONNECTION_STRING");
+    SetConnectionStringIfPresent(configuration, "SUPABASE_CONNECTION_STRING");
+    SetConnectionStringIfPresent(configuration, "SQLSERVER_CONNECTION_STRING");
 
     var corsOrigins = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
     if (!string.IsNullOrWhiteSpace(corsOrigins))
@@ -436,6 +454,15 @@ static void SetIfPresent(ConfigurationManager configuration, string environmentN
     if (!string.IsNullOrWhiteSpace(value))
     {
         configuration[configurationKey] = value.Trim().TrimEnd('/');
+    }
+}
+
+static void SetConnectionStringIfPresent(ConfigurationManager configuration, string environmentName)
+{
+    var value = Environment.GetEnvironmentVariable(environmentName);
+    if (!string.IsNullOrWhiteSpace(value))
+    {
+        configuration["ConnectionStrings:DefaultConnection"] = value.Trim();
     }
 }
 

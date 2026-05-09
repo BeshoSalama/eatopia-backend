@@ -45,7 +45,12 @@ public class UploadsApiTests
         response.EnsureSuccessStatusCode();
         using var json = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         var relativeUrl = json.RootElement.GetProperty("relative_url").GetString();
+        var absoluteUrl = json.RootElement.GetProperty("url").GetString();
         Assert.StartsWith("/uploads/chat-audio/", relativeUrl);
         Assert.EndsWith(".webm", relativeUrl);
+        Assert.StartsWith("http://localhost:3001/uploads/chat-audio/", absoluteUrl);
+
+        var staticResponse = await client.GetAsync(relativeUrl);
+        staticResponse.EnsureSuccessStatusCode();
     }
 }
